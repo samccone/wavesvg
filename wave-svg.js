@@ -1,4 +1,13 @@
 !(function() {
+
+  Float32Array.prototype.max = function(){
+    var max = -Infinity, len = this.length, i = 0;
+    for ( ; i < len; i++ )
+      if ( this[i] > max )
+        max = this[i];
+    return max;
+  };
+
   function draw(args){
     var peaks = getPeaks(args.buffer, args.width || window.innerWidth)
       , max   = Math.max.apply(Math, peaks)
@@ -19,7 +28,6 @@
 
   function getPeaks( buffer , width){
     var frame = buffer.getChannelData(0).length / width
-      , slice = Array.prototype.slice
       , peaks = []
       , channel
       , peak
@@ -27,7 +35,7 @@
     for ( ; ++i < width;) {
       for (j = peak = 0; ++j < buffer.numberOfChannels;) {
         channel = buffer.getChannelData(j)
-        peak += Math.max.apply(Math, slice.call(channel, i * frame, (i + 1) * frame))
+        peak += channel.subarray(i * frame, (i + 1) * frame).max()
       }
       peaks.push(peak)
     }
