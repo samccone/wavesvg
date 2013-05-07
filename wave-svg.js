@@ -11,18 +11,20 @@
   function draw(args){
     var peaks = getPeaks(args.buffer, args.width || window.innerWidth)
       , max   = Math.max.apply(Math, peaks)
-      , svg = document.createElementNS("http://www.w3.org/2000/svg", "svg")
-      , polyLine  = document.createElementNS("http://www.w3.org/2000/svg", "polyline")
-      , linePath = "";
+      , svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
     peaks.forEach(function(peak, index){
-      var h     = ~~(peak * ( args.maxHeight / max ));
       var w     = index;
-      linePath += w+","+h+",";
+      var h     = ~~(peak * ( args.maxHeight / max ));
+      var y     = ~~((args.maxHeight - h ) / 2);
+      rect  = document.createElementNS("http://www.w3.org/2000/svg", "rect")
+      rect.setAttribute("x", index);
+      rect.setAttribute("width", 1);
+      rect.setAttribute("height", h);
+      rect.setAttribute("y", y);
+      svg.appendChild(rect);
     });
 
-    polyLine.setAttribute("points", linePath.substring(0, linePath.length - 1));
-    svg.appendChild(polyLine);
     args.appendTo.appendChild(svg);
   }
 
