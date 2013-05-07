@@ -40,11 +40,23 @@ function drop( files ){
       var source = ac.createBufferSource()
       source.buffer = buffer
       source.connect(ac.destination)
-      window.waveSvg({
-        buffer: buffer,
-        maxHeight: 300,
-        width: 1300
-      });
+      for (var i = 0; i < 100; ++i){
+        window.waveSvg({
+          buffer: buffer,
+          maxHeight: 300,
+          width: 1300
+        });
+        window.waveSvg({
+          buffer: buffer,
+          maxHeight: 300,
+          width: 2 * 1300
+        });
+        window.waveSvg({
+          buffer: buffer,
+          maxHeight: 300,
+          width: 4 * 1300
+        });
+      }
       // source.noteOn(0)
       target.style.display = 'none'
       end = Date.now()

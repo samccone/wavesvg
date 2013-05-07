@@ -25,10 +25,13 @@
       svg.appendChild(rect);
     });
 
+    svg.setAttribute('width', args.width || window.innerWidth);
+    svg.setAttribute('height', args.maxHeight);
+
     args.appendTo.appendChild(svg);
   }
 
-  function getPeaks( buffer , width){
+  function getPeaks(buffer , width){
     var frame = buffer.getChannelData(0).length / width
       , peaks = []
       , channel
