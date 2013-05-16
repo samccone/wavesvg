@@ -10,12 +10,12 @@
 
   function draw(args){
     var peaks = getPeaks(args.buffer, args.width || window.innerWidth)
-      , max   = Math.max.apply(Math, peaks)
+      , max   = args.max || Math.max.apply(Math, peaks)
       , svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
 
     peaks.forEach(function(peak, index){
       var w     = index;
-      var h     = ~~(peak * ( args.maxHeight / max ));
+      var h     = Math.abs(~~(peak * ( args.maxHeight / max )));
       var y     = ~~((args.maxHeight - h ) / 2);
       rect  = document.createElementNS("http://www.w3.org/2000/svg", "rect")
       rect.setAttribute("x", index);

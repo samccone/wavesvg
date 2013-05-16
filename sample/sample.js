@@ -40,24 +40,12 @@ function drop( files ){
       var source = ac.createBufferSource()
       source.buffer = buffer
       source.connect(ac.destination)
-      for (var i = 0; i < 100; ++i){
-        window.waveSvg({
-          buffer: buffer,
-          maxHeight: 300,
-          width: 1300
-        });
-        window.waveSvg({
-          buffer: buffer,
-          maxHeight: 300,
-          width: 2 * 1300
-        });
-        window.waveSvg({
-          buffer: buffer,
-          maxHeight: 300,
-          width: 4 * 1300
-        });
-      }
-      // source.noteOn(0)
+      window.waveSvg({
+        buffer: buffer,
+        maxHeight: 300,
+        width: 1300,
+        max: 0.5
+      });
       target.style.display = 'none'
       end = Date.now()
       report.innerHTML = 'Processed in ' + ( ( end - start ) / 1000 ) + 's'
