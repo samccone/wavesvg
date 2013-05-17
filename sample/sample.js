@@ -40,11 +40,10 @@ function drop( files ){
       var source = ac.createBufferSource()
       source.buffer = buffer
       source.connect(ac.destination)
-      window.waveSvg({
+      new waveSvg({
         buffer: buffer,
         maxHeight: 300,
-        width: 1300,
-        max: 0.5
+        width: 1300
       });
       target.style.display = 'none'
       end = Date.now()
