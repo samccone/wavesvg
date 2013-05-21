@@ -9,8 +9,7 @@ class @waveSvg
     throw "you must pass an audio buffer" if !args.buffer?
     throw "you must pass a max height" if !args.maxHeight?
     args.appendTo = args.appendTo or document.body
-    args.width    = args.width or window.innerWidth
-
+    args.width    = args.width or if args.pixelsPerSecond? then args.pixelsPerSecond * args.buffer.duration else window.innerWidth
     @config = args
     @draw()
 

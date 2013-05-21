@@ -43,7 +43,8 @@ function drop( files ){
       new waveSvg({
         buffer: buffer,
         maxHeight: 300,
-        width: 1300
+        pixelsPerSecond: 200,
+        max: 2
       });
       target.style.display = 'none'
       end = Date.now()
