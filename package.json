@@ -1,0 +1,27 @@
+{
+  "name": "wave-svg",
+  "version": "0.1.0",
+  "description": "buffer to waveform svg",
+  "main": "wave-svg.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/samccone/wavesvg.git"
+  },
+  "devDependencies": {
+    "coffee-script": "1.6.2",
+    "colors": "0.6.0-1",
+    "monocle": "0.1.47"
+  },
+  "keywords": [
+    "svg",
+    "wave",
+    "buffer"
+  ],
+  "author": "Sam Saccone",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "gitHead": "6664b487f872280a9fd1da38f3d97591fab2293e"
+}
