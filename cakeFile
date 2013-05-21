@@ -1,0 +1,24 @@
+fs            = require 'fs'
+colors        = require 'colors'
+coffeeScript  = require 'coffee-script'
+Monocle       = require('monocle')()
+
+task "watch", ->
+  console.log "watching file".yellow;
+  Monocle.watchFiles
+    files:  [__dirname + "/src/wave-svg.coffee"]
+    listener: ->
+      fs.readFile __dirname + "/src/wave-svg.coffee", "utf8", (e, d) ->
+        try
+          compiled = coffeeScript.compile(d)
+        catch e
+          console.log "ERROR COMPILING".red
+          console.log e
+          return
+        fs.writeFile __dirname + "/wave-svg.js", compiled, (e, d) ->
+          console.log "Compiled".green.inverse
+
+task "build", ->
+  fs.readFile __dirname + "/src/wave-svg.coffee", "utf8", (e, d) ->
+    fs.writeFile __dirname + "/wave-svg.js", coffeeScript.compile(d), (e, d) ->
+      console.log "Built!".green.inverse
