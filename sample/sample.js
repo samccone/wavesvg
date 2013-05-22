@@ -52,3 +52,14 @@ function drop( files ){
     })
   }, false)
 }
+
+
+navigator.webkitGetUserMedia({audio: true}, function(d) {
+  new streamSvg({
+    maxHeight: 300,
+    stream: d,
+    max: 2
+  });
+});
+
+

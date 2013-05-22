@@ -1,4 +1,6 @@
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   Float32Array.prototype.max = function() {
     var i, max, _i, _ref;
 
@@ -46,8 +48,8 @@
         rect.setAttribute("y", y);
         this.svg.appendChild(rect);
       }
-      this.svg.setAttribute('width', this.config.width);
       this.svg.setAttribute('height', this.config.maxHeight);
+      this.svg.setAttribute('width', this.config.width);
       return this.config.appendTo.appendChild(this.svg);
     };
 
@@ -69,6 +71,54 @@
     };
 
     return waveSvg;
+
+  })();
+
+  this.streamSvg = (function() {
+    function streamSvg(args) {
+      this.appendWaveForm = __bind(this.appendWaveForm, this);      if (args.stream == null) {
+        throw "you must pass a stream";
+      }
+      if (args.maxHeight == null) {
+        throw "you must pass a max height";
+      }
+      if (args.max == null) {
+        throw "you must pass a max";
+      }
+      args.appendTo = args.appendTo || document.body;
+      this.context = new webkitAudioContext;
+      this.streamSource = this.context.createMediaStreamSource(args.stream);
+      this.processor = this.context.createScriptProcessor(2048, 1, 1);
+      this.config = args;
+      this.step = 0;
+      this.processor.onaudioprocess = this.appendWaveForm;
+      this.streamSource.connect(this.processor);
+      this.processor.connect(this.context.destination);
+      this.constructSvg();
+    }
+
+    streamSvg.prototype.constructSvg = function() {
+      this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      this.svg.setAttribute('height', this.config.maxHeight);
+      return this.config.appendTo.appendChild(this.svg);
+    };
+
+    streamSvg.prototype.appendWaveForm = function(d) {
+      var h, max, peak, rect, y;
+
+      rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+      max = this.config.max;
+      peak = d.inputBuffer.getChannelData(0).max();
+      h = Math.abs(~~(peak * (this.config.maxHeight / max)));
+      y = ~~((this.config.maxHeight - h) / 2);
+      rect.setAttribute("x", this.step++);
+      rect.setAttribute("width", 1);
+      rect.setAttribute("height", h);
+      rect.setAttribute("y", y);
+      return this.svg.appendChild(rect);
+    };
+
+    return streamSvg;
 
   })();
 
