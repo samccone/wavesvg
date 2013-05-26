@@ -15,6 +15,17 @@ wave svg
   });
 ```
 
+```js
+  navigator.webkitGetUserMedia({audio: true}, function(d) {
+    new streamSvg({
+      maxHeight: 300,
+      pixelsPerSecond: 200,
+      stream: d,
+      max: 2
+    });
+  });
+```
+
 #### To Dev
 ```
   cake watch
