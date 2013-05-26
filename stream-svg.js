@@ -15,10 +15,7 @@
 
   this.streamSvg = (function() {
     function streamSvg(args) {
-      this.appendWaveForm = __bind(this.appendWaveForm, this);      if (args.stream == null) {
-        throw "you must pass a stream";
-      }
-      if (args.maxHeight == null) {
+      this.onstream = __bind(this.onstream, this);      if (args.maxHeight == null) {
         throw "you must pass a max height";
       }
       if (args.max == null) {
@@ -28,16 +25,26 @@
         throw "you must pass pixelsPerSecond";
       }
       args.appendTo = args.appendTo || document.body;
-      this.context = new webkitAudioContext;
-      this.streamSource = this.context.createMediaStreamSource(args.stream);
-      this.processor = this.context.createScriptProcessor(2048, 1, 1);
       this.config = args;
       this.step = 0;
-      this.processor.onaudioprocess = this.appendWaveForm;
-      this.streamSource.connect(this.processor);
-      this.processor.connect(this.context.destination);
+      if (args.stream) {
+        this.streamProcessor(args.stream);
+      } else {
+        args.onstream = this.appendWaveForm;
+      }
       this.constructSvg();
     }
+
+    streamSvg.prototype.streamProcessor = function(stream) {
+      var context, processor, streamSource;
+
+      context = new webkitAudioContext;
+      streamSource = context.createMediaStreamSource(stream);
+      processor = context.createScriptProcessor(2048, 1, 1);
+      processor.onaudioprocess = this.onstream;
+      streamSource.connect(processor);
+      return processor.connect(context.destination);
+    };
 
     streamSvg.prototype.constructSvg = function() {
       this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -63,12 +70,13 @@
       return peaks;
     };
 
-    streamSvg.prototype.appendWaveForm = function(d) {
+    streamSvg.prototype.onstream = function(d) {
       var max,
         _this = this;
 
       max = this.config.max;
-      return this.getPeaks(d.inputBuffer).forEach(function(peak) {
+      d = d.inputBuffer || d;
+      return this.getPeaks(d).forEach(function(peak) {
         var h, rect, y;
 
         rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");

@@ -6,28 +6,35 @@ Float32Array.prototype.max = ->
 
 class @streamSvg
   constructor: (args) ->
-    throw "you must pass a stream" if !args.stream?
     throw "you must pass a max height" if !args.maxHeight?
     throw "you must pass a max" if !args.max?
     throw "you must pass pixelsPerSecond" if !args.pixelsPerSecond?
 
     args.appendTo             = args.appendTo or document.body
-    @context                  = new webkitAudioContext
-    @streamSource             = @context.createMediaStreamSource(args.stream)
-    @processor                = @context.createScriptProcessor(2048, 1, 1)
     @config                   = args
     @step                     = 0
-    @processor.onaudioprocess = @appendWaveForm
 
-    @streamSource.connect @processor
-    @processor.connect @context.destination
+    #  if someone passes a stream then we need to process it
+    if args.stream
+      @streamProcessor args.stream
+    else
+      args.onstream = @appendWaveForm
+
     @constructSvg()
+
+  streamProcessor: (stream) ->
+    context                  = new webkitAudioContext
+    streamSource             = context.createMediaStreamSource(stream)
+    processor                = context.createScriptProcessor(2048, 1, 1)
+    processor.onaudioprocess = @onstream
+
+    streamSource.connect processor
+    processor.connect context.destination
 
   constructSvg: ->
     @svg  = document.createElementNS "http://www.w3.org/2000/svg", "svg"
     @svg.setAttribute 'height', @config.maxHeight
     @config.appendTo.appendChild @svg
-
 
   getPeaks: (buffer) ->
     width   = ~~(@config.pixelsPerSecond * buffer.duration)
@@ -42,9 +49,10 @@ class @streamSvg
       peaks.push peak
     peaks
 
-  appendWaveForm: (d) =>
+  onstream: (d) =>
     max   = @config.max
-    @getPeaks(d.inputBuffer).forEach (peak) =>
+    d = d.inputBuffer or d
+    @getPeaks(d).forEach (peak) =>
       rect  = document.createElementNS("http://www.w3.org/2000/svg", "rect")
       h     = Math.abs(~~(peak * ( @config.maxHeight / max )))
       y     = ~~((@config.maxHeight - h ) / 2)

@@ -26,6 +26,11 @@ wave svg
   });
 ```
 
+```js
+  // you can also not pass a stream and just call
+  // onstream(buffer) directly
+```
+
 #### To Dev
 ```
   cake watch

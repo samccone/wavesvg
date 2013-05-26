@@ -58,9 +58,7 @@ navigator.webkitGetUserMedia({audio: true}, function(d) {
   new streamSvg({
     maxHeight: 300,
     pixelsPerSecond: 200,
-    stream: d,
-    max: 2
+    max: 2,
+    stream: d
   });
 });
-
-
