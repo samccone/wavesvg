@@ -4,21 +4,22 @@ coffeeScript  = require 'coffee-script'
 Monocle       = require('monocle')()
 
 task "watch", ->
-  console.log "watching file".yellow;
-  Monocle.watchFiles
-    files:  [__dirname + "/src/wave-svg.coffee"]
-    listener: ->
-      fs.readFile __dirname + "/src/wave-svg.coffee", "utf8", (e, d) ->
+  console.log "watching files".yellow;
+  Monocle.watchDirectory
+    root: __dirname + "/src/"
+    listener: (change) ->
+      fs.readFile change.fullPath, "utf8", (e, d) ->
         try
           compiled = coffeeScript.compile(d)
         catch e
-          console.log "ERROR COMPILING".red
+          console.log "ERROR COMPILING #{change.name}".red
           console.log e
           return
-        fs.writeFile __dirname + "/wave-svg.js", compiled, (e, d) ->
-          console.log "Compiled".green.inverse
+        fs.writeFile __dirname + "/#{change.name.split('.')[0]}.js", compiled, (e, d) ->
+          console.log "Compiled #{change.name}".green.inverse
 
 task "build", ->
-  fs.readFile __dirname + "/src/wave-svg.coffee", "utf8", (e, d) ->
-    fs.writeFile __dirname + "/wave-svg.js", coffeeScript.compile(d), (e, d) ->
-      console.log "Built!".green.inverse
+  ["stream", "wave"].forEach (name) ->
+    fs.readFile __dirname + "/src/#{name}-svg.coffee", "utf8", (e, d) ->
+      fs.writeFile __dirname + "/#{name}-svg.js", coffeeScript.compile(d), (e, d) ->
+        console.log "Built #{name}-svg.coffee!".green.inverse
