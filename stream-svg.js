@@ -58,7 +58,6 @@
       width = ~~(this.config.pixelsPerSecond * buffer.duration);
       frame = buffer.getChannelData(0).length / width;
       peaks = [];
-      channel = null;
       for (i = _i = 0, _ref = width - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         peak = 0;
         for (j = _j = 0, _ref1 = buffer.numberOfChannels - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {

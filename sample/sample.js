@@ -44,6 +44,7 @@ function drop( files ){
         buffer: buffer,
         maxHeight: 300,
         pixelsPerSecond: 200,
+        workerPath: "../peak-worker.js",
         max: 2
       });
       target.style.display = 'none'

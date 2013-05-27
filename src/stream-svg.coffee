@@ -40,7 +40,6 @@ class @streamSvg
     width   = ~~(@config.pixelsPerSecond * buffer.duration)
     frame   = buffer.getChannelData(0).length / width
     peaks   = []
-    channel = null
     for i in [0 .. width - 1]
       peak  = 0
       for j in [0 .. buffer.numberOfChannels - 1]

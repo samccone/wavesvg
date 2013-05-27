@@ -8,10 +8,11 @@ wave svg
   new waveSvg({
     buffer: Audiobuffer,
     maxHeight: 300,
-    width: 1300, <default window.innerWidth>
-    pixelsPerSecond: 200, <default window.innerWidth>
-    appendTo: dom node, <default document.body>
-    max: 0.2 <defaults to the tallest audio peak>
+    width: 1300, //<default window.innerWidth>
+    pixelsPerSecond: 200, //<default window.innerWidth>
+    appendTo: dom node, //<default document.body>
+    max: 0.2 //<defaults to the tallest audio peak>
+    workerPath: "path to worker" //<defaults to peak-worker.js>
   });
 ```
 

@@ -1,4 +1,6 @@
 (function() {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   Float32Array.prototype.max = function() {
     var i, max, _i, _ref;
 
@@ -16,6 +18,7 @@
       if (args == null) {
         args = {};
       }
+      this.drawPeaks = __bind(this.drawPeaks, this);
       if (args.buffer == null) {
         throw "you must pass an audio buffer";
       }
@@ -24,15 +27,17 @@
       }
       args.appendTo = args.appendTo || document.body;
       args.width = args.width || (args.pixelsPerSecond != null ? args.pixelsPerSecond * args.buffer.duration : window.innerWidth);
+      this.worker = new Worker(args.workerPath || "peak-worker.js");
+      this.worker.onmessage = this.drawPeaks;
       this.config = args;
       this.draw();
     }
 
-    waveSvg.prototype.draw = function() {
+    waveSvg.prototype.drawPeaks = function(e) {
       var h, i, max, peak, peaks, rect, w, y, _i, _len;
 
       this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      peaks = this.getPeaks(this.config.buffer);
+      peaks = e.data.peaks;
       max = this.config.max || Math.max.apply(Math, peaks);
       for (i = _i = 0, _len = peaks.length; _i < _len; i = ++_i) {
         peak = peaks[i];
@@ -51,21 +56,22 @@
       return this.config.appendTo.appendChild(this.svg);
     };
 
-    waveSvg.prototype.getPeaks = function(buffer) {
-      var channel, frame, i, j, peak, peaks, _i, _j, _ref, _ref1;
+    waveSvg.prototype.draw = function() {
+      return this.getPeaks();
+    };
 
-      frame = buffer.getChannelData(0).length / this.config.width;
-      peaks = [];
-      channel = null;
-      for (i = _i = 0, _ref = this.config.width; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        peak = 0;
-        for (j = _j = 0, _ref1 = buffer.numberOfChannels - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          channel = buffer.getChannelData(j);
-          peak += channel.subarray(i * frame, (i + 1) * frame).max();
-        }
-        peaks.push(peak);
+    waveSvg.prototype.getPeaks = function(buffer) {
+      var channels, i, _i, _ref;
+
+      channels = [];
+      for (i = _i = 0, _ref = this.config.buffer.numberOfChannels - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        channels.push(Float32Array.prototype.subarray.apply(this.config.buffer.getChannelData(i)));
       }
-      return peaks;
+      return this.worker.postMessage({
+        length: this.config.buffer.getChannelData(0).length,
+        channels: channels,
+        width: this.config.width
+      });
     };
 
     return waveSvg;
