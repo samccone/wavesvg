@@ -61,3 +61,4 @@ class @streamSvg
       rect.setAttribute "height", h
       rect.setAttribute "y", y
       @svg.appendChild(rect)
+    @svg.setAttribute 'width', @step

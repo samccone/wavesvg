@@ -75,7 +75,7 @@
 
       max = this.config.max;
       d = d.inputBuffer || d;
-      return this.getPeaks(d).forEach(function(peak) {
+      this.getPeaks(d).forEach(function(peak) {
         var h, rect, y;
 
         rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -87,6 +87,7 @@
         rect.setAttribute("y", y);
         return _this.svg.appendChild(rect);
       });
+      return this.svg.setAttribute('width', this.step);
     };
 
     return streamSvg;
