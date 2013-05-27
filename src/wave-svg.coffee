@@ -1,9 +1,3 @@
-Float32Array.prototype.max = ->
-  max = -Infinity
-  for i in [0 .. @length]
-    max = @[i] if @[i] > max
-  max
-
 class @waveSvg
   constructor: (args = {}) ->
     throw "you must pass an audio buffer" if !args.buffer?

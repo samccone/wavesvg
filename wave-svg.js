@@ -1,18 +1,6 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Float32Array.prototype.max = function() {
-    var i, max, _i, _ref;
-
-    max = -Infinity;
-    for (i = _i = 0, _ref = this.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (this[i] > max) {
-        max = this[i];
-      }
-    }
-    return max;
-  };
-
   this.waveSvg = (function() {
     function waveSvg(args) {
       if (args == null) {
