@@ -15,10 +15,26 @@ class @waveSvg
     @config           = args
     @draw()
 
+  updateMaxScalar: (max) ->
+    @config.max = max
+    @removeSvg()
+    @draw()
+
+  updatePixelsPerSecond: (amount) ->
+    @config.pixelsPerSecond = amount
+    @config.width = @config.pixelsPerSecond * @config.buffer.duration
+    @removeSvg()
+    @draw()
+
+  removeSvg: ->
+    @config.appendTo.removeChild @svg
+
   drawPeaks: (e) =>
-    @svg  = document.createElementNS "http://www.w3.org/2000/svg", "svg"
-    peaks = e.data.peaks
-    max   = @config.max or Math.max.apply(Math, peaks)
+    peaks           = e.data.peaks
+    @svg            = document.createElementNS "http://www.w3.org/2000/svg", "svg"
+    @svg.innerHTML  = ""
+    max             = @config.max or Math.max.apply(Math, peaks)
+
     for peak, i in peaks
       w     = i
       h     = Math.abs(~~(peak * ( @config.maxHeight / max )))
@@ -33,11 +49,13 @@ class @waveSvg
     @svg.setAttribute 'height', @config.maxHeight
     @svg.setAttribute 'width', @config.width
     @config.appendTo.appendChild @svg
+    console?.warn? "drawn in #{(new Date().getTime() - @startTime)/1000} sec"
 
   draw: ->
+    @startTime        = new Date().getTime()
     @getPeaks()
 
-  getPeaks: (buffer) ->
+  getPeaks: ->
     channels = []
     for i in [0 .. @config.buffer.numberOfChannels - 1]
       channels.push Float32Array.prototype.subarray.apply @config.buffer.getChannelData(i)

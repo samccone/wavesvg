@@ -33,11 +33,29 @@
       this.draw();
     }
 
+    waveSvg.prototype.updateMaxScalar = function(max) {
+      this.config.max = max;
+      this.removeSvg();
+      return this.draw();
+    };
+
+    waveSvg.prototype.updatePixelsPerSecond = function(amount) {
+      this.config.pixelsPerSecond = amount;
+      this.config.width = this.config.pixelsPerSecond * this.config.buffer.duration;
+      this.removeSvg();
+      return this.draw();
+    };
+
+    waveSvg.prototype.removeSvg = function() {
+      return this.config.appendTo.removeChild(this.svg);
+    };
+
     waveSvg.prototype.drawPeaks = function(e) {
       var h, i, max, peak, peaks, rect, w, y, _i, _len;
 
-      this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       peaks = e.data.peaks;
+      this.svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      this.svg.innerHTML = "";
       max = this.config.max || Math.max.apply(Math, peaks);
       for (i = _i = 0, _len = peaks.length; _i < _len; i = ++_i) {
         peak = peaks[i];
@@ -53,14 +71,16 @@
       }
       this.svg.setAttribute('height', this.config.maxHeight);
       this.svg.setAttribute('width', this.config.width);
-      return this.config.appendTo.appendChild(this.svg);
+      this.config.appendTo.appendChild(this.svg);
+      return typeof console !== "undefined" && console !== null ? typeof console.warn === "function" ? console.warn("drawn in " + ((new Date().getTime() - this.startTime) / 1000) + " sec") : void 0 : void 0;
     };
 
     waveSvg.prototype.draw = function() {
+      this.startTime = new Date().getTime();
       return this.getPeaks();
     };
 
-    waveSvg.prototype.getPeaks = function(buffer) {
+    waveSvg.prototype.getPeaks = function() {
       var channels, i, _i, _ref;
 
       channels = [];
