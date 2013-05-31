@@ -2,7 +2,7 @@ wave svg
 ----------------
 
 
-#### API
+#### wavesvg
 
 ```js
   new waveSvg({
@@ -13,8 +13,18 @@ wave svg
     appendTo: dom node, //<default document.body>
     max: 0.2 //<defaults to the tallest audio peak>
     workerPath: "path to worker" //<defaults to peak-worker.js>
+    downSample: 16 // <defaults to 16> -- higher num for faster render
   });
 ```
+##### interface
+
+```js
+  instance.updatePixelsPerSecond(n);
+  instance.updateMaxScalar(n);
+  instance.updateDownSampleRate(n);
+```
+
+#### streamsvg
 
 ```js
   navigator.webkitGetUserMedia({audio: true}, function(d) {
@@ -27,9 +37,11 @@ wave svg
   });
 ```
 
+##### interface
+
 ```js
   // you can also not pass a stream and just call
-  // onstream(buffer) directly
+  instance.onstream(buffer);
 ```
 
 #### To Dev
