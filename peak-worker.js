@@ -14,7 +14,7 @@
     return max;
   };
 
-  Math.prototype.abs1 = function(val) {
+  Math.abs1 = function(val) {
     if (val < 0) {
       return -val;
     } else {

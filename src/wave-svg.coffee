@@ -1,15 +1,11 @@
-Float32Array.prototype.max = ->
-  max = -Infinity
-  for i in [0 .. @length]
-    max = @[i] if @[i] > max
-  max
-
 class @waveSvg
   constructor: (args = {}) ->
     throw "you must pass an audio buffer" if !args.buffer?
     throw "you must pass a max height" if !args.maxHeight?
     args.appendTo     = args.appendTo or document.body
     args.width        = args.width or if args.pixelsPerSecond? then args.pixelsPerSecond * args.buffer.duration else window.innerWidth
+    args.downSample   = args.downSample or 16
+    args.shrunkBuffer = @shrinkBuffer(args.buffer, args.downSample)
     @worker           = new Worker(args.workerPath or "peak-worker.js")
     @worker.onmessage = @drawPeaks
     @config           = args
@@ -19,6 +15,15 @@ class @waveSvg
     @config.max = max
     @removeSvg()
     @draw()
+
+  shrinkBuffer: (b, downSample) ->
+    toReturn = []
+    for i in [0 .. b.numberOfChannels - 1]
+      step = 0
+      toReturn.push new Float32Array(~~(b.getChannelData(i).length/downSample))
+      for j in [0 .. (toReturn[i].length) - 1]
+        toReturn[i][step++] = b.getChannelData(i)[j * downSample]
+    toReturn
 
   updatePixelsPerSecond: (amount) ->
     @config.pixelsPerSecond = amount
@@ -52,15 +57,13 @@ class @waveSvg
     console?.warn? "drawn in #{(new Date().getTime() - @startTime)/1000} sec"
 
   draw: ->
-    @startTime        = new Date().getTime()
+    @startTime = new Date().getTime()
     @getPeaks()
 
   getPeaks: ->
     channels = []
-    for i in [0 .. @config.buffer.numberOfChannels - 1]
-      channels.push Float32Array.prototype.subarray.apply @config.buffer.getChannelData(i)
 
     @worker.postMessage
-      length: @config.buffer.getChannelData(0).length
-      channels: channels
+      length: @config.shrunkBuffer[0].length
+      channels: @config.shrunkBuffer
       width: @config.width

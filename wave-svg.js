@@ -1,18 +1,6 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  Float32Array.prototype.max = function() {
-    var i, max, _i, _ref;
-
-    max = -Infinity;
-    for (i = _i = 0, _ref = this.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (this[i] > max) {
-        max = this[i];
-      }
-    }
-    return max;
-  };
-
   this.waveSvg = (function() {
     function waveSvg(args) {
       if (args == null) {
@@ -27,6 +15,8 @@
       }
       args.appendTo = args.appendTo || document.body;
       args.width = args.width || (args.pixelsPerSecond != null ? args.pixelsPerSecond * args.buffer.duration : window.innerWidth);
+      args.downSample = args.downSample || 16;
+      args.shrunkBuffer = this.shrinkBuffer(args.buffer, args.downSample);
       this.worker = new Worker(args.workerPath || "peak-worker.js");
       this.worker.onmessage = this.drawPeaks;
       this.config = args;
@@ -37,6 +27,20 @@
       this.config.max = max;
       this.removeSvg();
       return this.draw();
+    };
+
+    waveSvg.prototype.shrinkBuffer = function(b, downSample) {
+      var i, j, step, toReturn, _i, _j, _ref, _ref1;
+
+      toReturn = [];
+      for (i = _i = 0, _ref = b.numberOfChannels - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+        step = 0;
+        toReturn.push(new Float32Array(~~(b.getChannelData(i).length / downSample)));
+        for (j = _j = 0, _ref1 = toReturn[i].length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+          toReturn[i][step++] = b.getChannelData(i)[j * downSample];
+        }
+      }
+      return toReturn;
     };
 
     waveSvg.prototype.updatePixelsPerSecond = function(amount) {
@@ -81,15 +85,12 @@
     };
 
     waveSvg.prototype.getPeaks = function() {
-      var channels, i, _i, _ref;
+      var channels;
 
       channels = [];
-      for (i = _i = 0, _ref = this.config.buffer.numberOfChannels - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-        channels.push(Float32Array.prototype.subarray.apply(this.config.buffer.getChannelData(i)));
-      }
       return this.worker.postMessage({
-        length: this.config.buffer.getChannelData(0).length,
-        channels: channels,
+        length: this.config.shrunkBuffer[0].length,
+        channels: this.config.shrunkBuffer,
         width: this.config.width
       });
     };
