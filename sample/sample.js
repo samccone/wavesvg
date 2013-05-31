@@ -40,7 +40,7 @@ function drop( files ){
       var source = ac.createBufferSource()
       source.buffer = buffer
       source.connect(ac.destination)
-      new waveSvg({
+      window.foo = new waveSvg({
         buffer: buffer,
         maxHeight: 300,
         pixelsPerSecond: 200,

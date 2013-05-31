@@ -1,6 +1,21 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
+  Math.abs1 = function(val) {
+    if (val < 0) {
+      return -val;
+    } else {
+      return val;
+    }
+  };
+
+  Math.ceil1 = function(val) {
+    var f;
+
+    f = val << 0;
+    return f = f === val ? f : f + 1;
+  };
+
   this.waveSvg = (function() {
     function waveSvg(args) {
       if (args == null) {
@@ -64,7 +79,7 @@
       for (i = _i = 0, _len = peaks.length; _i < _len; i = ++_i) {
         peak = peaks[i];
         w = i;
-        h = Math.abs(~~(peak * (this.config.maxHeight / max)));
+        h = Math.abs1(Math.ceil1(peak * (this.config.maxHeight / max)));
         y = ~~((this.config.maxHeight - h) / 2);
         rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
         rect.setAttribute("x", i);

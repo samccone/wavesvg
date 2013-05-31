@@ -1,3 +1,10 @@
+Math.abs1 = (val) ->
+  if val < 0 then -val else val
+
+Math.ceil1 = (val) ->
+    f = (val << 0)
+    f = if f is val then f else f + 1
+
 class @waveSvg
   constructor: (args = {}) ->
     @config = args
@@ -47,7 +54,7 @@ class @waveSvg
 
     for peak, i in peaks
       w     = i
-      h     = Math.abs(~~(peak * ( @config.maxHeight / max )))
+      h     = Math.abs1(Math.ceil1(peak * ( @config.maxHeight / max )))
       y     = ~~((@config.maxHeight - h ) / 2)
       rect  = document.createElementNS("http://www.w3.org/2000/svg", "rect")
       rect.setAttribute "x", i
