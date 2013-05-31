@@ -1,8 +1,12 @@
 Float32Array.prototype.max = ->
   max = -Infinity
   for i in [0 .. @length]
-    max = @[i] if @[i] > max
+    max = Math.abs1(@[i]) if Math.abs1(@[i]) > max
+    return 1 if max >= 1
   max
+
+Math.prototype.abs1 = (val) ->
+  if val < 0 then -val else val
 
 @addEventListener 'message', (e) ->
   frame   = e.data.channels[0].length / e.data.width

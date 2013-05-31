@@ -4,11 +4,22 @@
 
     max = -Infinity;
     for (i = _i = 0, _ref = this.length; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
-      if (this[i] > max) {
-        max = this[i];
+      if (Math.abs1(this[i]) > max) {
+        max = Math.abs1(this[i]);
+      }
+      if (max >= 1) {
+        return 1;
       }
     }
     return max;
+  };
+
+  Math.prototype.abs1 = function(val) {
+    if (val < 0) {
+      return -val;
+    } else {
+      return val;
+    }
   };
 
   this.addEventListener('message', function(e) {
