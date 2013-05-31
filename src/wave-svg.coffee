@@ -17,12 +17,10 @@ class @waveSvg
 
   updateMaxScalar: (max) ->
     @config.max = max
-    @removeSvg()
     @draw()
 
   updateDownSampleRate: (rate) ->
     @config.shrunkBuffer = @shrinkBuffer(@config.buffer, rate)
-    @removeSvg()
     @draw()
 
   shrinkBuffer: (b, downSample) ->
@@ -39,16 +37,12 @@ class @waveSvg
   updatePixelsPerSecond: (amount) ->
     @config.pixelsPerSecond = amount
     @config.width = @config.pixelsPerSecond * @config.buffer.duration
-    @removeSvg()
     @draw()
-
-  removeSvg: ->
-    @config.appendTo.removeChild @svg
 
   drawPeaks: (e) =>
     peaks           = e.data.peaks
-    @svg            = document.createElementNS "http://www.w3.org/2000/svg", "svg"
-    @svg.innerHTML  = ""
+    svg             = document.createElementNS "http://www.w3.org/2000/svg", "svg"
+    svg.innerHTML   = ""
     max             = @config.max or Math.max.apply(Math, peaks)
 
     for peak, i in peaks
@@ -60,11 +54,12 @@ class @waveSvg
       rect.setAttribute "width", 1
       rect.setAttribute "height", h
       rect.setAttribute "y", y
-      @svg.appendChild(rect)
+      svg.appendChild(rect)
 
-    @svg.setAttribute 'height', @config.maxHeight
-    @svg.setAttribute 'width', @config.width
-    @config.appendTo.appendChild @svg
+    svg.setAttribute 'height', @config.maxHeight
+    svg.setAttribute 'width', @config.width
+    if @svg @config.appendTo.replaceChild svg, @svg else @config.appendTo.appendChild svg
+    @svg = svg
     console?.warn? "drawn in #{(new Date().getTime() - @startTime)/1000} sec"
 
   draw: ->
