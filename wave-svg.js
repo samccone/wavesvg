@@ -75,8 +75,8 @@
       }
       svg.setAttribute('height', this.config.maxHeight);
       svg.setAttribute('width', this.config.width);
-      if (this.svg(this.config.appendTo.replaceChild(svg, this.svg))) {
-
+      if (this.svg) {
+        this.config.appendTo.replaceChild(svg, this.svg);
       } else {
         this.config.appendTo.appendChild(svg);
       }

@@ -58,7 +58,7 @@ class @waveSvg
 
     svg.setAttribute 'height', @config.maxHeight
     svg.setAttribute 'width', @config.width
-    if @svg @config.appendTo.replaceChild svg, @svg else @config.appendTo.appendChild svg
+    if @svg then @config.appendTo.replaceChild svg, @svg else @config.appendTo.appendChild svg
     @svg = svg
     console?.warn? "drawn in #{(new Date().getTime() - @startTime)/1000} sec"
 
