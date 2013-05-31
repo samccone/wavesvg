@@ -1,14 +1,18 @@
 class @waveSvg
   constructor: (args = {}) ->
-    throw "you must pass an audio buffer" if !args.buffer?
-    throw "you must pass a max height" if !args.maxHeight?
-    args.appendTo     = args.appendTo or document.body
-    args.width        = args.width or if args.pixelsPerSecond? then args.pixelsPerSecond * args.buffer.duration else window.innerWidth
-    args.downSample   = args.downSample or 16
-    args.shrunkBuffer = @shrinkBuffer(args.buffer, args.downSample)
-    @worker           = new Worker(args.workerPath or "peak-worker.js")
-    @worker.onmessage = @drawPeaks
-    @config           = args
+    @config = args
+
+    throw "you must pass an audio buffer" if !@config.buffer?
+    throw "you must pass a max height" if !@config.maxHeight?
+
+    @config.appendTo      = @config.appendTo or document.body
+    @config.width         = @config.width or if @config.pixelsPerSecond? then @config.pixelsPerSecond * @config.buffer.duration else window.innerWidth
+    @config.downSample    = @config.downSample or 16
+    @config.shrunkBuffer  = @shrinkBuffer(@config.buffer, @config.downSample)
+
+    @worker               = new Worker(@config.workerPath or "peak-worker.js")
+    @worker.onmessage     = @drawPeaks
+
     @draw()
 
   updateMaxScalar: (max) ->
@@ -16,13 +20,20 @@ class @waveSvg
     @removeSvg()
     @draw()
 
+  updateDownSampleRate: (rate) ->
+    @config.shrunkBuffer = @shrinkBuffer(@config.buffer, rate)
+    @removeSvg()
+    @draw()
+
   shrinkBuffer: (b, downSample) ->
     toReturn = []
     for i in [0 .. b.numberOfChannels - 1]
-      step = 0
-      toReturn.push new Float32Array(~~(b.getChannelData(i).length/downSample))
+      step  = 0
+      cd    = b.getChannelData(i)
+
+      toReturn.push new Float32Array(~~(cd.length/downSample))
       for j in [0 .. (toReturn[i].length) - 1]
-        toReturn[i][step++] = b.getChannelData(i)[j * downSample]
+        toReturn[i][step++] = cd[j * downSample]
     toReturn
 
   updatePixelsPerSecond: (amount) ->

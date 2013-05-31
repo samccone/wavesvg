@@ -7,19 +7,19 @@
         args = {};
       }
       this.drawPeaks = __bind(this.drawPeaks, this);
-      if (args.buffer == null) {
+      this.config = args;
+      if (this.config.buffer == null) {
         throw "you must pass an audio buffer";
       }
-      if (args.maxHeight == null) {
+      if (this.config.maxHeight == null) {
         throw "you must pass a max height";
       }
-      args.appendTo = args.appendTo || document.body;
-      args.width = args.width || (args.pixelsPerSecond != null ? args.pixelsPerSecond * args.buffer.duration : window.innerWidth);
-      args.downSample = args.downSample || 16;
-      args.shrunkBuffer = this.shrinkBuffer(args.buffer, args.downSample);
-      this.worker = new Worker(args.workerPath || "peak-worker.js");
+      this.config.appendTo = this.config.appendTo || document.body;
+      this.config.width = this.config.width || (this.config.pixelsPerSecond != null ? this.config.pixelsPerSecond * this.config.buffer.duration : window.innerWidth);
+      this.config.downSample = this.config.downSample || 16;
+      this.config.shrunkBuffer = this.shrinkBuffer(this.config.buffer, this.config.downSample);
+      this.worker = new Worker(this.config.workerPath || "peak-worker.js");
       this.worker.onmessage = this.drawPeaks;
-      this.config = args;
       this.draw();
     }
 
@@ -29,15 +29,22 @@
       return this.draw();
     };
 
+    waveSvg.prototype.updateDownSampleRate = function(rate) {
+      this.config.shrunkBuffer = this.shrinkBuffer(this.config.buffer, rate);
+      this.removeSvg();
+      return this.draw();
+    };
+
     waveSvg.prototype.shrinkBuffer = function(b, downSample) {
-      var i, j, step, toReturn, _i, _j, _ref, _ref1;
+      var cd, i, j, step, toReturn, _i, _j, _ref, _ref1;
 
       toReturn = [];
       for (i = _i = 0, _ref = b.numberOfChannels - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         step = 0;
-        toReturn.push(new Float32Array(~~(b.getChannelData(i).length / downSample)));
+        cd = b.getChannelData(i);
+        toReturn.push(new Float32Array(~~(cd.length / downSample)));
         for (j = _j = 0, _ref1 = toReturn[i].length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
-          toReturn[i][step++] = b.getChannelData(i)[j * downSample];
+          toReturn[i][step++] = cd[j * downSample];
         }
       }
       return toReturn;
