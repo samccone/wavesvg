@@ -32,12 +32,12 @@ class @waveSvg
 
   shrinkBuffer: (b, downSample) ->
     toReturn = []
-    for i in [0 .. b.numberOfChannels - 1]
+    for i in [0 ... b.numberOfChannels]
       step  = 0
       cd    = b.getChannelData(i)
 
       toReturn.push new Float32Array(~~(cd.length/downSample))
-      for j in [0 .. (toReturn[i].length) - 1]
+      for j in [0 ... (toReturn[i].length)]
         toReturn[i][step++] = cd[j * downSample]
     toReturn
 

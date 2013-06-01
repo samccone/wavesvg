@@ -52,11 +52,11 @@
       var cd, i, j, step, toReturn, _i, _j, _ref, _ref1;
 
       toReturn = [];
-      for (i = _i = 0, _ref = b.numberOfChannels - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
+      for (i = _i = 0, _ref = b.numberOfChannels; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
         step = 0;
         cd = b.getChannelData(i);
         toReturn.push(new Float32Array(~~(cd.length / downSample)));
-        for (j = _j = 0, _ref1 = toReturn[i].length - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
+        for (j = _j = 0, _ref1 = toReturn[i].length; 0 <= _ref1 ? _j < _ref1 : _j > _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
           toReturn[i][step++] = cd[j * downSample];
         }
       }
