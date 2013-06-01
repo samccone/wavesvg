@@ -64,9 +64,13 @@
     };
 
     waveSvg.prototype.updatePixelsPerSecond = function(amount) {
+      var oldWidth;
+
+      oldWidth = this.config.width;
       this.config.pixelsPerSecond = amount;
       this.config.width = this.config.pixelsPerSecond * this.config.buffer.duration;
-      return this.draw();
+      this.draw();
+      return this.config.width - oldWidth;
     };
 
     waveSvg.prototype.drawPeaks = function(e) {

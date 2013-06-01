@@ -42,9 +42,11 @@ class @waveSvg
     toReturn
 
   updatePixelsPerSecond: (amount) ->
+    oldWidth = @config.width
     @config.pixelsPerSecond = amount
     @config.width = @config.pixelsPerSecond * @config.buffer.duration
     @draw()
+    @config.width - oldWidth
 
   drawPeaks: (e) =>
     peaks           = e.data.peaks
