@@ -27,6 +27,7 @@
       args.appendTo = args.appendTo || document.body;
       this.config = args;
       this.step = 0;
+      this.deviation = 0;
       if (args.stream) {
         this.streamProcessor(args.stream);
       } else {
@@ -53,11 +54,16 @@
     };
 
     streamSvg.prototype.getPeaks = function(buffer) {
-      var channel, frame, i, j, peak, peaks, width, _i, _j, _ref, _ref1;
+      var actualWidth, channel, frame, i, j, peak, peaks, width, _i, _j, _ref, _ref1;
 
-      width = ~~(this.config.pixelsPerSecond * buffer.duration);
+      actualWidth = this.config.pixelsPerSecond * buffer.duration;
+      width = Math.ceil(actualWidth);
+      this.deviation += width - actualWidth;
       frame = buffer.getChannelData(0).length / width;
       peaks = [];
+      if (this.deviation >= 1) {
+        width -= --this.deviation;
+      }
       for (i = _i = 0, _ref = width - 1; 0 <= _ref ? _i <= _ref : _i >= _ref; i = 0 <= _ref ? ++_i : --_i) {
         peak = 0;
         for (j = _j = 0, _ref1 = buffer.numberOfChannels - 1; 0 <= _ref1 ? _j <= _ref1 : _j >= _ref1; j = 0 <= _ref1 ? ++_j : --_j) {
@@ -79,7 +85,7 @@
         var h, rect, y;
 
         rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-        h = Math.abs(~~(peak * (_this.config.maxHeight / max)));
+        h = Math.abs(Math.ceil(peak * (_this.config.maxHeight / max)));
         y = ~~((_this.config.maxHeight - h) / 2);
         rect.setAttribute("x", _this.step++);
         rect.setAttribute("width", 1);
